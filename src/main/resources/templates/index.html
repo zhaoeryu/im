@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>LayIM 3.x PC版本地演示</title>
+
+    <link rel="stylesheet" th:href="@{/layui.min/css/layui.css}">
+    <style>
+        html {
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<script th:inline="javascript">var ctx = [[@{/}]];</script>
+<script th:src="@{/layui.min/layui.js}"></script>
+<script th:src="@{/js/axios.js}"></script>
+<script th:src="@{/js/axios_instance.js}"></script>
+<script th:src="@{/js/wsconfig.js}"></script>
+<script>
+    layui.use('layim', function (layim) {
+
+        //基础配置
+        layim.config({
+
+            //初始化接口
+            init: {
+                url: ctx + 'layim/getList'
+                , data: {}
+            }
+
+            //查看群员接口
+            , members: {
+                url: ctx + 'layim/getMembers'
+                , data: {}
+            }
+
+            //上传图片接口
+            , uploadImage: {
+                url: '/upload/image' //（返回的数据格式见下文）
+                , type: '' //默认post
+            }
+
+            //上传文件接口
+            , uploadFile: {
+                url: '/upload/file' //（返回的数据格式见下文）
+                , type: '' //默认post
+            }
+
+            , isAudio: false //开启聊天工具栏音频
+            , isVideo: false //开启聊天工具栏视频
+
+            //扩展工具栏
+            , tool: [{
+                alias: 'code'
+                , title: '代码'
+                , icon: '&#xe64e;'
+            }]
+
+            ,brief: false //是否简约模式（若开启则不显示主面板）
+            ,title: 'WebIM' //自定义主面板最小化时的标题
+            // ,right: '0px' //主面板相对浏览器右侧距离
+            // ,minRight: '0px' //聊天面板最小化时相对浏览器右侧距离
+            , initSkin: '5.jpg' //1-5 设置初始背景
+            //,skin: ['aaa.jpg'] //新增皮肤
+            ,isfriend: true //是否开启好友
+            ,isgroup: true //是否开启群组
+            ,min: false //是否始终最小化主面板，默认false
+            // , notice: true //是否开启桌面消息提醒，默认false
+            // ,voice: true //声音提醒，默认开启，声音文件为：default.mp3
+            ,copyright: true // 是否授权。如果非授权获得，或将LayIM应用在第三方，建议保留，即不设置。
+
+            , msgbox: layui.cache.dir + 'css/modules/layim/html/msgbox.html' //消息盒子页面地址，若不开启，剔除该项即可
+            , find: layui.cache.dir + 'css/modules/layim/html/find.html' //发现页面地址，若不开启，剔除该项即可
+            , chatLog: layui.cache.dir + 'css/modules/layim/html/chatlog.html' //聊天记录页面地址，若不开启，剔除该项即可
+
+        });
+
+        //监听在线状态的切换事件
+        layim.on('online', function (data) {
+            instance({
+                method: 'put',
+                url: '/layim/user',
+                data: {
+                    id: layui.layim.cache().mine.id,
+                    status: data
+                }
+            }).then(res => {
+                if (res.code != 0){
+                    layer.msg(res.msg)
+                }
+            });
+        });
+
+        //监听签名修改
+        layim.on('sign', function (value) {
+            instance({
+                method: 'put',
+                url: '/layim/user',
+                data: {
+                    id: layui.layim.cache().mine.id,
+                    sign: value
+                }
+            }).then(res => {
+                if (res.code != 0){
+                    layer.msg(res.msg)
+                }
+            });
+        });
+
+        //监听自定义工具栏点击，以添加代码为例
+        layim.on('tool(code)', function (insert) {
+            layer.prompt({
+                title: '插入代码'
+                , formType: 2
+                , shade: 0
+            }, function (text, index) {
+                layer.close(index);
+                insert('[pre class=layui-code]' + text + '[/pre]'); //将内容插入到编辑器
+            });
+        });
+
+        //监听layim建立就绪
+        layim.on('ready', function (res) {
+
+            // console.log('layim read---------');
+            // console.log(res);
+
+            var initEventHandle = function () {
+
+                /**
+                 * 收到消息后
+                 */
+                socket.onmessage = function (event) {
+                    console.log('onmessage...');
+                    var resp = JSON.parse(event.data)
+                    // console.log(resp);
+                    // case 1: 用户消息
+
+                    // case 2: 系统消息
+
+                    if (!resp.mine){
+                        layim.getMessage(resp);
+                    }
+                }
+
+                /**
+                 * 连接后
+                 */
+                socket.onopen = function (event) {
+                    console.log('onopen...');
+                    var cache =  layui.layim.cache();
+                    var mine = cache.mine;
+                    sendMessage(1,mine)
+                }
+
+                /**
+                 * 连接关闭
+                 */
+                socket.onclose = function (event) {
+                    console.log('onclose...');
+                    layer.msg("连接关闭")
+                }
+
+                /**
+                 * 连接异常
+                 */
+                socket.onerror = function () {
+                    console.log('onerror...');
+                    layer.msg("连接异常")
+                }
+            }
+
+            createWS(ws_url,initEventHandle);
+
+            instance({
+                method: 'get',
+                url: '/layim/unreadmsg'
+            }).then(res => {
+                if (res.code == 0 && res.data > 0){
+                    layim.msgbox(res.data);
+                }
+            });
+        });
+
+
+        //监听发送消息
+        layim.on('sendMessage', function (data) {
+            var To = data.to;
+            var Mine = data.mine;
+            // console.log(data);
+
+            // send message to websocket
+            if (To.type === 'friend'){
+                sendMessage(2,data)
+            } else if(To.type === 'group') {
+                sendMessage(5,data)
+            }
+        });
+
+        //监听查看群员
+        layim.on('members', function (data) {
+            console.log(data);
+        });
+
+        //监听聊天窗口的切换
+        layim.on('chatChange', function (res) {
+            var type = res.data.type;
+            console.log(res.data.id)
+            if (type === 'friend') {
+                //模拟标注好友状态
+                //layim.setChatStatus('<span style="color:#FF5722;">在线</span>');
+            } else if (type === 'group') {
+                //模拟系统消息
+                // layim.getMessage({
+                //     system: true
+                //     , id: res.data.id
+                //     , type: "group"
+                //     , content: '模拟群员' + (Math.random() * 100 | 0) + '加入群聊'
+                // });
+            }
+        });
+
+
+        // 清空所有本地缓存消息
+        // var local = localStorage.getItem('layim')
+        // console.log(JSON.parse(local));
+        // var cache =  layui.layim.cache();
+        // console.log(cache);
+        // console.log(JSON.parse(local)[cache.mine.id]);
+        // //这里以删除本地聊天记录为例
+        // // delete local.chatlog;
+        // // delete local.history;
+        //
+        // // // 向localStorage同步数据
+        // // layui.data('layim', {
+        // //     key: cache.mine.id
+        // //     ,value: {
+        // //
+        // //     }
+        // // });
+
+    });
+
+</script>
+</body>
+</html>

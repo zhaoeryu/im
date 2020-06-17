@@ -1,0 +1,11 @@
+${AnsiColor.BRIGHT_GREEN}
+ __      __       _________ .__                   .___
+/  \    /  \ ____ \_   ___ \|  |   ____  __ __  __| _/
+\   \/\/   // __ \/    \  \/|  |  /  _ \|  |  \/ __ |
+ \        /\  ___/\     \___|  |_(  <_> )  |  / /_/ |
+  \__/\  /  \___  >\______  /____/\____/|____/\____ |
+       \/       \/        \/                       \/
+
+${AnsiColor.BRIGHT_BLUE}
+::: WeCloud (version:${application.version}) :::            Spring-Boot: ${spring-boot.version}
+

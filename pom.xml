@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>cn.wecloud</groupId>
+    <artifactId>layim</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+        <maven-compiler-plugin.version>3.6.2</maven-compiler-plugin.version>
+        <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
+        <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+        <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
+        <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
+        <apache.commons-lang3.version>3.3.2</apache.commons-lang3.version>
+        <apache.commons-io.version>2.5</apache.commons-io.version>
+        <apache.commons.beanutils>1.9.3</apache.commons.beanutils>
+        <apache.commons.codec>1.11</apache.commons.codec>
+        <apache.commons.collections>3.2.2</apache.commons.collections>
+
+        <spring-boot.version>2.1.6.RELEASE</spring-boot.version>
+        <security.starter.version>2.0.1.RELEASE</security.starter.version>
+        <netty.version>4.1.42.Final</netty.version>
+
+        <mysql.version>5.1.42</mysql.version>
+        <druid.version>1.1.10</druid.version>
+        <mybatis-plus.version>3.2.0</mybatis-plus.version>
+        <pagehelper.version>1.2.10</pagehelper.version>
+
+        <jjwt.version>0.10.6</jjwt.version>
+        <hutool.version>5.2.5</hutool.version>
+        <dozer.version>5.5.1</dozer.version>
+        <oshi.version>3.9.1</oshi.version>
+
+        <!-- 自定义版本 -->
+        <study-common.version>1.0-SNAPSHOT</study-common.version>
+        <study-common-starter.version>1.0-SNAPSHOT</study-common-starter.version>
+        <study-code-generator.version>1.0-SNAPSHOT</study-code-generator.version>
+        <study-quartz.version>1.0-SNAPSHOT</study-quartz.version>
+        <study-message.version>1.0-SNAPSHOT</study-message.version>
+        <study-logger.version>1.0-SNAPSHOT</study-logger.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.study</groupId>
+                <artifactId>common</artifactId>
+                <version>${study-common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.study</groupId>
+                <artifactId>common-starter</artifactId>
+                <version>${study-common-starter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.study</groupId>
+                <artifactId>code-generator</artifactId>
+                <version>${study-code-generator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.study</groupId>
+                <artifactId>quartz</artifactId>
+                <version>${study-quartz.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.study</groupId>
+                <artifactId>message</artifactId>
+                <version>${study-message.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.study</groupId>
+                <artifactId>logger</artifactId>
+                <version>${study-logger.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+
+    <dependencies>
+        <!-- 启动器 -->
+        <dependency>
+            <groupId>cn.study</groupId>
+            <artifactId>common-starter</artifactId>
+        </dependency>
+
+        <!-- Netty -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>${netty.version}</version>
+        </dependency>
+
+        <!-- thymeleaf -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.nekohtml</groupId>
+            <artifactId>nekohtml</artifactId>
+            <version>1.9.18</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <finalName>${artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+                <configuration>
+                    <executable>true</executable>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${maven.compiler.encoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!--打包跳过测试-->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
