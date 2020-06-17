@@ -62,33 +62,8 @@
 
             <dependency>
                 <groupId>cn.study</groupId>
-                <artifactId>common</artifactId>
-                <version>${study-common.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>cn.study</groupId>
                 <artifactId>common-starter</artifactId>
                 <version>${study-common-starter.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>cn.study</groupId>
-                <artifactId>code-generator</artifactId>
-                <version>${study-code-generator.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>cn.study</groupId>
-                <artifactId>quartz</artifactId>
-                <version>${study-quartz.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>cn.study</groupId>
-                <artifactId>message</artifactId>
-                <version>${study-message.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>cn.study</groupId>
-                <artifactId>logger</artifactId>
-                <version>${study-logger.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
