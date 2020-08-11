@@ -52,7 +52,9 @@ function sendMessage(cmd,message){
         }
         socket.send(JSON.stringify(msg));
     }else{
-        alert("连接没有开启");
+        if(cmd !== 4){
+            alert("连接没有开启");
+        }
         // 是否进行重新连接
     }
 }

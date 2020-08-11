@@ -1,5 +1,6 @@
 package cn.wecloud.layim.netty;
 
+import cn.wecloud.layim.netty.handler.HeartBeatHandler;
 import cn.wecloud.layim.netty.handler.HttpHandler;
 import cn.wecloud.layim.netty.handler.WebSocketDispatcherHandler;
 import io.netty.bootstrap.ServerBootstrap;
@@ -15,9 +16,12 @@ import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketSe
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Desc :
@@ -45,6 +49,7 @@ public class NettyServer {
                         // ChannelInboundHandler 处理读逻辑
 
                         // Http消息处理
+                        ch.pipeline().addLast(new IdleStateHandler(60,0,0, TimeUnit.SECONDS)); // 空闲检测,默认60秒
                         ch.pipeline().addLast(new HttpServerCodec()); // Http编码
                         ch.pipeline().addLast(new HttpObjectAggregator(64*1024)); // 把多个消息转换为一个单一的FullHttpRequest或是FullHttpResponse,原因是HTTP解码器会在每个HTTP消息中生成多个消息对象HttpRequest/HttpResponse,HttpContent,LastHttpContent
                         ch.pipeline().addLast(new ChunkedWriteHandler());// 主要用于处理大数据流，比如一个1G大小的文件如果你直接传输肯定会撑暴jvm内存的; 增加之后就不用考虑这个问题了
@@ -54,6 +59,7 @@ public class NettyServer {
                         ch.pipeline().addLast(new WebSocketServerCompressionHandler()); // Websocket 数据压缩
                         ch.pipeline().addLast(new WebSocketServerProtocolHandler("/ws",null,true,10*1024)); // 支持websocket协议，数据包最大长度10k
                         ch.pipeline().addLast(new WebSocketDispatcherHandler());
+                        ch.pipeline().addLast(new HeartBeatHandler()); // 心跳检测
 
 //                        ch.pipeline().addLast(new PacketCodecHandler());
 //                        ch.pipeline().addLast(new IMIdleStateHandler()); // 空闲检测

@@ -12,7 +12,7 @@ public interface HandlerExchanger {
 
     boolean support(byte cmd);
 
-    boolean exchange(ChannelHandlerContext ctx, String message);
+    void exchange(ChannelHandlerContext ctx, String message);
 
     default void sendMessage(Channel channel, String message){
         channel.writeAndFlush(new TextWebSocketFrame(message).retain());

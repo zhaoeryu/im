@@ -36,7 +36,7 @@ public class ChatHandlerExchanger implements HandlerExchanger {
     }
 
     @Override
-    public boolean exchange(ChannelHandlerContext ctx, String message) {
+    public void exchange(ChannelHandlerContext ctx, String message) {
         log.info("exchanger chat ...");
         log.info(message);
 
@@ -90,6 +90,5 @@ public class ChatHandlerExchanger implements HandlerExchanger {
         messageLog.setSendTime(new Date(responseMessage.getTimestamp()));
         messageLog.setReadFlag(isRead);
         messageLogService.save(messageLog);
-        return true;
     }
 }

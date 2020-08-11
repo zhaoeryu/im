@@ -19,11 +19,10 @@ public class KeepAliveHandlerExchanger implements HandlerExchanger {
     }
 
     @Override
-    public boolean exchange(ChannelHandlerContext ctx, String message) {
+    public void exchange(ChannelHandlerContext ctx, String message) {
         log.info("exchanger KEEPALIVE ...");
         log.info(message);
         // TODO 心跳消息
         log.info("收到来自channel为[" + ctx.channel() + "]的心跳包...");
-        return true;
     }
 }

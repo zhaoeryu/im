@@ -46,7 +46,7 @@ public class GroupMsgHandlerExchanger implements HandlerExchanger {
     }
 
     @Override
-    public boolean exchange(ChannelHandlerContext ctx, String message) {
+    public void exchange(ChannelHandlerContext ctx, String message) {
         // TODO 群消息发送
         log.info("exchanger group_msg ...");
         log.info(message);
@@ -105,6 +105,5 @@ public class GroupMsgHandlerExchanger implements HandlerExchanger {
         messageLog.setContent(ObjectMapperUtils.toJsonString(txtMessage));
         messageLog.setSendTime(new Date(responseMessage.getTimestamp()));
         messageLogService.save(messageLog);
-        return true;
     }
 }

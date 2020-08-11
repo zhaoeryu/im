@@ -154,6 +154,12 @@
                     var cache =  layui.layim.cache();
                     var mine = cache.mine;
                     sendMessage(1,mine)
+
+
+                    // 30秒一个心跳包
+                    setInterval(() => {
+                        sendMessage(4,{})
+                    },30000)
                 }
 
                 /**

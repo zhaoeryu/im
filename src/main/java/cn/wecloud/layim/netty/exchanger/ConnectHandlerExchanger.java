@@ -24,13 +24,12 @@ public class ConnectHandlerExchanger implements HandlerExchanger {
     }
 
     @Override
-    public boolean exchange(ChannelHandlerContext ctx, String message) {
+    public void exchange(ChannelHandlerContext ctx, String message) {
         log.info("exchanger connect ...");
         log.info(message);
 
         // TODO 打开WS连接,保存Session
         // 当websocket 第一次open的时候，初始化channel，把用的channel和userid关联起来
         SessionUtil.bindSession(ctx.channel(), Objects.requireNonNull(ObjectMapperUtils.readValue(message, Session.class)));
-        return true;
     }
 }

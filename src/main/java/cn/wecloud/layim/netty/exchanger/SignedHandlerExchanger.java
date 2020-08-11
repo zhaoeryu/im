@@ -27,7 +27,7 @@ public class SignedHandlerExchanger implements HandlerExchanger {
     }
 
     @Override
-    public boolean exchange(ChannelHandlerContext ctx, String message) {
+    public void exchange(ChannelHandlerContext ctx, String message) {
         log.info("exchanger signed ...");
         log.info(message);
 
@@ -38,9 +38,8 @@ public class SignedHandlerExchanger implements HandlerExchanger {
         String[] msgIds = StringUtils.delimitedListToStringArray(signedMessage.getMsgids(), ",");
         List<String> mids = Arrays.asList(msgIds);
         if (CollectionUtil.isEmpty(mids)){
-            return true;
+
         }
         // ...
-        return true;
     }
 }
