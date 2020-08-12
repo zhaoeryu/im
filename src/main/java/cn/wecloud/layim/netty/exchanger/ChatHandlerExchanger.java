@@ -2,8 +2,8 @@ package cn.wecloud.layim.netty.exchanger;
 
 import cn.hutool.core.lang.Assert;
 import cn.wecloud.layim.layui.enums.LayimMessageTypeEnum;
-import cn.wecloud.layim.mvc.domain.message.TxtMessage;
 import cn.wecloud.layim.mvc.domain.entity.MessageLog;
+import cn.wecloud.layim.mvc.domain.message.TxtMessage;
 import cn.wecloud.layim.mvc.service.MessageLogService;
 import cn.wecloud.layim.netty.protocol.command.MsgCommand;
 import cn.wecloud.layim.netty.protocol.request.ChatMessage;

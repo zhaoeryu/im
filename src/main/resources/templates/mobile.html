@@ -178,9 +178,9 @@ layim.on('chatChange', function(data){
 
       // send message to websocket
       if (To.type === 'friend'){
-          sendMessage(2,data)
+          sendMessage(MSG_CMD.CHAT,data)
       } else if(To.type === 'group') {
-          sendMessage(5,data)
+          sendMessage(MSG_CMD.GROUP_MSG,data)
       }
 
   });
@@ -232,7 +232,9 @@ layim.on('chatChange', function(data){
                 console.log('onopen...');
                 var cache =  layim.cache();
                 var mine = cache.mine;
-                sendMessage(1,mine)
+                sendMessage(MSG_CMD.CONNECT,mine)
+
+                keepAlive(mine);
             }
 
             /**
@@ -252,7 +254,7 @@ layim.on('chatChange', function(data){
             }
         }
 
-        createWS(ws_url,initEventHandle);
+        createWS(initEventHandle);
     });
 
 

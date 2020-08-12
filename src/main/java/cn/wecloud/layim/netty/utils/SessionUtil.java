@@ -62,4 +62,11 @@ public class SessionUtil {
         groupIdChannelMap.put(groupId,channelGroup);
         return channelGroup;
     }
+
+    public static int getOnlineCount(){
+        return userIdChannelMap.keySet().size();
+    }
+    public static int getOnlineGroupCount(){
+        return groupIdChannelMap.keySet().size();
+    }
 }

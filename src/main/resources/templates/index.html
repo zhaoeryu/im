@@ -153,13 +153,9 @@
                     console.log('onopen...');
                     var cache =  layui.layim.cache();
                     var mine = cache.mine;
-                    sendMessage(1,mine)
+                    sendMessage(MSG_CMD.CONNECT,mine)
 
-
-                    // 30秒一个心跳包
-                    setInterval(() => {
-                        sendMessage(4,{})
-                    },30000)
+                    keepAlive(mine)
                 }
 
                 /**
@@ -179,7 +175,7 @@
                 }
             }
 
-            createWS(ws_url,initEventHandle);
+            createWS(initEventHandle);
 
             instance({
                 method: 'get',
@@ -200,9 +196,9 @@
 
             // send message to websocket
             if (To.type === 'friend'){
-                sendMessage(2,data)
+                sendMessage(MSG_CMD.CHAT,data)
             } else if(To.type === 'group') {
-                sendMessage(5,data)
+                sendMessage(MSG_CMD.GROUP_MSG,data)
             }
         });
 
