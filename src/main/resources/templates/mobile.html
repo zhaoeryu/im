@@ -178,9 +178,9 @@ layim.on('chatChange', function(data){
 
       // send message to websocket
       if (To.type === 'friend'){
-          sendMessage(MSG_CMD.CHAT,data)
+          WS.sendMessage(MSG_CMD.CHAT,data)
       } else if(To.type === 'group') {
-          sendMessage(MSG_CMD.GROUP_MSG,data)
+          WS.sendMessage(MSG_CMD.GROUP_MSG,data)
       }
 
   });
@@ -207,54 +207,55 @@ layim.on('chatChange', function(data){
         // console.log('layim read---------');
         // console.log(res);
 
-        var initEventHandle = function () {
+        /**
+         * 收到消息后
+         */
+        WS.wscall.onmessage = function (event) {
+            console.log('onmessage...');
+            var resp = JSON.parse(event.data)
+            // console.log(resp);
+            // case 1: 用户消息
 
-            /**
-             * 收到消息后
-             */
-            socket.onmessage = function (event) {
-                console.log('onmessage...');
-                var resp = JSON.parse(event.data)
-                // console.log(resp);
-                // case 1: 用户消息
+            // case 2: 系统消息
 
-                // case 2: 系统消息
-
-                if (!resp.mine){
-                    layim.getMessage(resp);
-                }
-            }
-
-            /**
-             * 连接后
-             */
-            socket.onopen = function (event) {
-                console.log('onopen...');
-                var cache =  layim.cache();
-                var mine = cache.mine;
-                sendMessage(MSG_CMD.CONNECT,mine)
-
-                keepAlive(mine);
-            }
-
-            /**
-             * 连接关闭
-             */
-            socket.onclose = function (event) {
-                console.log('onclose...');
-                layer.msg("连接关闭")
-            }
-
-            /**
-             * 连接异常
-             */
-            socket.onerror = function () {
-                console.log('onerror...');
-                layer.msg("连接异常")
+            if (!resp.mine){
+                layim.getMessage(resp);
             }
         }
 
-        createWS(initEventHandle);
+        /**
+         * 连接后
+         */
+        WS.wscall.onopen = function (event) {
+            console.log('onopen...');
+            var cache =  layim.cache();
+            var mine = cache.mine;
+            WS.sendMessage(MSG_CMD.CONNECT,mine)
+        }
+
+        /**
+         * 连接关闭
+         */
+        WS.wscall.onclose = function (event) {
+            console.log('onclose...');
+            layer.msg("连接关闭")
+        }
+
+        /**
+         * 连接异常
+         */
+        WS.wscall.onerror = function () {
+            console.log('onerror...');
+            layer.msg("连接异常")
+        }
+
+        // 设置完 WS.wscall 后再 init
+        WS.init()
+        // 心跳检测
+        let cache =  layim.cache();
+        let mine = cache.mine;
+        WS.keepAlive(mine)
+
     });
 
 

@@ -153,7 +153,7 @@ public class ApplyAuditServiceImpl extends BaseServiceImpl<ApplyAuditMapper, App
                     message = "["+ userMap.get(item.getAuditUserId()).getUsername() +"]同意添加您为好友";
                 }else if(LayimApplyTypeEnum.GROUP.getValue().equals(item.getType())){
                     // 群
-                    message = "["+groupMap.get(item.getGroupId()).getGroupname()+"]同意您入群[]";
+                    message = "["+groupMap.get(item.getGroupId()).getGroupname()+"]同意您入群";
                 }
             }else if(LayimApplyStatusEnum.DENY.getValue() == item.getStatus()){
                 // 已拒绝
@@ -162,7 +162,7 @@ public class ApplyAuditServiceImpl extends BaseServiceImpl<ApplyAuditMapper, App
                     message = "["+ userMap.get(item.getAuditUserId()).getUsername() +"]拒绝添加您为好友";
                 }else if(LayimApplyTypeEnum.GROUP.getValue().equals(item.getType())){
                     // 群
-                    message = "["+groupMap.get(item.getGroupId()).getGroupname()+"]拒绝您加入群[]";
+                    message = "["+groupMap.get(item.getGroupId()).getGroupname()+"]拒绝您加入群";
                 }
             }
         }else{

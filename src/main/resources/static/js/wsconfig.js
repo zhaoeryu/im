@@ -1,7 +1,5 @@
+var WS = {};
 var ws_url = 'ws://' + window.location.hostname + ':2048/ws';
-var reconnectflag = false;// 避免重复连接
-var socket = null;
-var ws_callback = null;
 
 var MSG_CMD = {
     CONNECT: 1, // 1. 第一次(或重连)初始化连接
@@ -11,46 +9,66 @@ var MSG_CMD = {
     GROUP_MSG: 5 // 5. 群消息
 }
 
-
 /**
- * 创建连接
+ * 初始化连接
  */
-function createWS(callback) {
-    if (!ws_callback){
-        ws_callback = callback
-    }
+WS.init = function () {
     try {
         if (!window.WebSocket) window.WebSocket = window.MozWebSocket;
         if (window.WebSocket){
-            socket = new WebSocket(ws_url);
-            callback();
+            WS.socket = new WebSocket(ws_url);
+
+            /**
+             * 收到消息后
+             */
+            WS.socket.onmessage = function (event) {
+                WS.wscall.onmessage(event)
+            }
+
+            /**
+             * 连接后
+             */
+            WS.socket.onopen = function (event) {
+                WS.wscall.onopen(event)
+            }
+
+            /**
+             * 连接关闭
+             */
+            WS.socket.onclose = function (event) {
+                WS.wscall.onclose(event)
+            }
+
+            /**
+             * 连接异常
+             */
+            WS.socket.onerror = function () {
+                WS.wscall.onerror()
+            }
         }else{
             alert('您的浏览器不支持WebSocket协议,无法进行连接')
         }
     }catch (e) {
-        reConnectWS(callback)
+        WS.reconnect()
     }
 }
-
+WS.wscall = {}
 /**
  * 重新连接
  */
-function reConnectWS(callback) {
-    if (reconnectflag) return;
-    reconnectflag = true;
+WS.reconnect = function() {
+    if (WS.socket && WS.socket.readyState == WebSocket.OPEN) return;
     setTimeout(function () {
-        createWS(callback);
-        reconnectflag = false;
+        WS.init()
     },2*1000)
 }
-
 
 /**
  * 发送数据
  * @param cmd 指令
  * @param message 消息体
  */
-function sendMessage(cmd,message){
+WS.sendMessage = function(cmd,message){
     if (!cmd || !message || message.length < 1){
         return
     }
@@ -58,18 +76,18 @@ function sendMessage(cmd,message){
         return;
     }
     //当websocket状态打开
-    if(socket.readyState == WebSocket.OPEN){
+    if(WS.socket.readyState == WebSocket.OPEN){
         var msg = {
             cmd: cmd,
             message: JSON.stringify(message)
         }
-        socket.send(JSON.stringify(msg));
+        WS.socket.send(JSON.stringify(msg));
     }else{
         if(cmd !== 4){
             alert("连接没有开启");
         }else{
             // 心跳包尝试重连
-            reConnectWS(ws_url,ws_callback)
+            WS.reconnect()
         }
     }
 }
@@ -77,9 +95,9 @@ function sendMessage(cmd,message){
 /**
  * 每20秒进行心跳检查
  */
-function keepAlive(mine) {
+WS.keepAlive = function (mine) {
     setInterval(() => {
         console.log('keep-alive , id = '+mine.id);
-        sendMessage(MSG_CMD.KEEPALIVE,mine)
-    },5*1000)
+        WS.sendMessage(MSG_CMD.KEEPALIVE,mine)
+    },30*1000)
 }
