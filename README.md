@@ -24,3 +24,8 @@
 
 - 支持pc端和移动端两个版本
 - 项目中使用了作者另一个项目中的依赖，如需运行请联系作者 微信号：wx_zhaoey
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0814/090602_cde32644_1893428.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0814/090629_3f4154db_1893428.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0814/090707_ed29a46c_1893428.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0814/090727_64e61b17_1893428.png "屏幕截图.png")
