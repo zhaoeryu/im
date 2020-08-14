@@ -29,8 +29,7 @@
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0814/090629_3f4154db_1893428.png "屏幕截图.png")
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0814/090707_ed29a46c_1893428.png "屏幕截图.png")
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0814/090727_64e61b17_1893428.png "屏幕截图.png")
-<div style="height:600px;display:flex;">
+ <img src="https://images.gitee.com/uploads/images/2020/0814/090906_3d9faf05_1893428.png" width = "300" height = "650" align=center />
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0814/090906_3d9faf05_1893428.png "屏幕截图.png")
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0814/090921_403c0b60_1893428.png "屏幕截图.png")
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0814/091019_663e0c69_1893428.png "屏幕截图.png")
-</div>
