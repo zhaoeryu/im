@@ -7,9 +7,8 @@ import lombok.Data;
  * @Create : zhaoey ~ 2020/06/14
  */
 @Data
-public class ChatMessage extends BaseMessage {
+public class OnlineStatusMessage extends BaseMessage {
 
-    private Mine mine;
-    private To to;
+    private String status;
 
 }

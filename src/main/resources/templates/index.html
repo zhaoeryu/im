@@ -92,6 +92,9 @@
                     layer.msg(res.msg)
                 }
             });
+            WS.sendMessage(MSG_CMD.ONLINE_STATUS,{
+                status: data
+            })
         });
 
         //监听签名修改
@@ -138,8 +141,16 @@
 
                 // case 2: 系统消息
 
-                if (!resp.mine){
-                    layim.getMessage(resp);
+                switch (resp.cmd){
+                    case MSG_CMD.CHAT:
+                    case MSG_CMD.GROUP_MSG:
+                        if (!resp.mine){
+                            layim.getMessage(resp);
+                        }
+                        break;
+                    case MSG_CMD.ONLINE_STATUS:
+                        layim.setFriendStatus(resp.friendId, resp.onlineStatus);
+                        break;
                 }
             }
 
@@ -176,6 +187,7 @@
             let mine = cache.mine;
             WS.keepAlive(mine)
 
+            // 获取系统消息
             instance({
                 method: 'get',
                 url: '/layim/unreadmsg'
@@ -186,14 +198,11 @@
             });
         });
 
-
         //监听发送消息
         layim.on('sendMessage', function (data) {
             var To = data.to;
             var Mine = data.mine;
-            // console.log(data);
 
-            // send message to websocket
             if (To.type === 'friend'){
                 WS.sendMessage(MSG_CMD.CHAT,data)
             } else if(To.type === 'group') {

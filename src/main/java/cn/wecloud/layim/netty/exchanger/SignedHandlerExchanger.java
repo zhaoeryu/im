@@ -27,7 +27,7 @@ public class SignedHandlerExchanger implements HandlerExchanger {
     }
 
     @Override
-    public void exchange(ChannelHandlerContext ctx, String message) {
+    public void exchange(ChannelHandlerContext ctx, String message, Byte cmd) {
         log.info("exchanger signed ...");
         log.info(message);
 

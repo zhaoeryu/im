@@ -1,10 +1,6 @@
 const instance = axios.create({
     baseURL: 'http://'+window.location.host+'/',
-    timeout: 7000,
-    auth: {
-        username: 'ranfouClientId',
-        password: 'ranfouSecret'
-    }
+    timeout: 7000
 });
 // 添加请求拦截器
 instance.interceptors.request.use(function (config) {

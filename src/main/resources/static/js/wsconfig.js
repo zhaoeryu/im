@@ -2,46 +2,33 @@ var WS = {};
 var ws_url = 'ws://' + window.location.hostname + ':2048/ws';
 
 var MSG_CMD = {
-    CONNECT: 1, // 1. 第一次(或重连)初始化连接
-    CHAT: 2, // 2. 聊天消息
-    SIGNED: 3, // 3. 消息签收
-    KEEPALIVE: 4,// 4. 客户端保持心跳
-    GROUP_MSG: 5 // 5. 群消息
+    CONNECT: 1, // 第一次(或重连)初始化连接
+    CHAT: 2, // 聊天消息
+    SIGNED: 3, // 消息签收
+    KEEPALIVE: 4,// 客户端保持心跳
+    GROUP_MSG: 5, // 群消息
+    ONLINE_STATUS: 6, // 在线状态
 }
 
 /**
  * 初始化连接
  */
+WS.wscall = {}
 WS.init = function () {
     try {
         if (!window.WebSocket) window.WebSocket = window.MozWebSocket;
         if (window.WebSocket){
             WS.socket = new WebSocket(ws_url);
 
-            /**
-             * 收到消息后
-             */
             WS.socket.onmessage = function (event) {
                 WS.wscall.onmessage(event)
             }
-
-            /**
-             * 连接后
-             */
             WS.socket.onopen = function (event) {
                 WS.wscall.onopen(event)
             }
-
-            /**
-             * 连接关闭
-             */
             WS.socket.onclose = function (event) {
                 WS.wscall.onclose(event)
             }
-
-            /**
-             * 连接异常
-             */
             WS.socket.onerror = function () {
                 WS.wscall.onerror()
             }
@@ -52,7 +39,6 @@ WS.init = function () {
         WS.reconnect()
     }
 }
-WS.wscall = {}
 /**
  * 重新连接
  */

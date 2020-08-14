@@ -36,7 +36,7 @@ public class ChatHandlerExchanger implements HandlerExchanger {
     }
 
     @Override
-    public void exchange(ChannelHandlerContext ctx, String message) {
+    public void exchange(ChannelHandlerContext ctx, String message, Byte cmd) {
         log.info("exchanger chat ...");
         log.info(message);
 
@@ -48,6 +48,7 @@ public class ChatHandlerExchanger implements HandlerExchanger {
         // 2.给自己发送成功消息
         Channel fromChannel = SessionUtil.getChannel(messageBody.getMine().getId());
         ChatResponseMessage responseMessage = new ChatResponseMessage();
+        responseMessage.setCmd(cmd);
         responseMessage.setId(messageBody.getMine().getId());
         responseMessage.setUsername(messageBody.getMine().getUsername());
         responseMessage.setAvatar(messageBody.getMine().getAvatar());

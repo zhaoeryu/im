@@ -218,8 +218,16 @@ layim.on('chatChange', function(data){
 
             // case 2: 系统消息
 
-            if (!resp.mine){
-                layim.getMessage(resp);
+            switch (resp.cmd){
+                case MSG_CMD.CHAT:
+                case MSG_CMD.GROUP_MSG:
+                    if (!resp.mine){
+                        layim.getMessage(resp);
+                    }
+                    break;
+                case MSG_CMD.ONLINE_STATUS:
+                    layim.setFriendStatus(resp.friendId, resp.onlineStatus);
+                    break;
             }
         }
 

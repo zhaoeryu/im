@@ -46,7 +46,7 @@ public class GroupMsgHandlerExchanger implements HandlerExchanger {
     }
 
     @Override
-    public void exchange(ChannelHandlerContext ctx, String message) {
+    public void exchange(ChannelHandlerContext ctx, String message, Byte cmd) {
         // TODO 群消息发送
         log.info("exchanger group_msg ...");
         log.info(message);
@@ -58,6 +58,7 @@ public class GroupMsgHandlerExchanger implements HandlerExchanger {
         // 2.给自己发送成功消息
         Channel fromChannel = SessionUtil.getChannel(messageBody.getMine().getId());
         ChatResponseMessage responseMessage = new ChatResponseMessage();
+        responseMessage.setCmd(cmd);
         responseMessage.setId(messageBody.getTo().getId());
         responseMessage.setUsername(messageBody.getMine().getUsername());
         responseMessage.setAvatar(messageBody.getMine().getAvatar());

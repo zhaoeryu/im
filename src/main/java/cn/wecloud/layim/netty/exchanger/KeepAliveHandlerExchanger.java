@@ -26,7 +26,7 @@ public class KeepAliveHandlerExchanger implements HandlerExchanger {
     }
 
     @Override
-    public void exchange(ChannelHandlerContext ctx, String message) {
+    public void exchange(ChannelHandlerContext ctx, String message, Byte cmd) {
         log.info("exchanger KEEPALIVE ...");
         log.info(message);
         // TODO 心跳消息

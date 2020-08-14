@@ -28,7 +28,7 @@ public class HandlerDispatcher implements ApplicationContextAware {
         }
         exchangers.forEach(item -> {
             if (item.support(packet.getCmd())) {
-                item.exchange(ctx,packet.getMessage());
+                item.exchange(ctx,packet.getMessage(),packet.getCmd());
             }
         });
     }
