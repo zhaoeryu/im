@@ -3,7 +3,7 @@ package cn.wecloud.layim.mvc.controller;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.crypto.digest.MD5;
 import cn.study.common.utils.FileUtil;
-import cn.wecloud.layim.layui.model.LayuiResult;
+import cn.wecloud.layim.model.LayuiResult;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

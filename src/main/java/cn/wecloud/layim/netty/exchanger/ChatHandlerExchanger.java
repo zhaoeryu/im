@@ -1,11 +1,14 @@
 package cn.wecloud.layim.netty.exchanger;
 
 import cn.hutool.core.lang.Assert;
-import cn.wecloud.layim.layui.enums.LayimMessageTypeEnum;
+import cn.study.common.utils.SpringContextHolder;
+import cn.wecloud.layim.enums.LayimMessageTypeEnum;
 import cn.wecloud.layim.mvc.domain.entity.MessageLog;
 import cn.wecloud.layim.mvc.domain.message.TxtMessage;
 import cn.wecloud.layim.mvc.service.MessageLogService;
+import cn.wecloud.layim.netty.event.UnReadMessageEvent;
 import cn.wecloud.layim.netty.protocol.command.MsgCommand;
+import cn.wecloud.layim.netty.protocol.packet.WsMessageRequestPacket;
 import cn.wecloud.layim.netty.protocol.request.ChatMessage;
 import cn.wecloud.layim.netty.protocol.response.ChatResponseMessage;
 import cn.wecloud.layim.netty.utils.ObjectMapperUtils;
@@ -36,19 +39,19 @@ public class ChatHandlerExchanger implements HandlerExchanger {
     }
 
     @Override
-    public void exchange(ChannelHandlerContext ctx, String message, Byte cmd) {
+    public void exchange(ChannelHandlerContext ctx, WsMessageRequestPacket packet) {
         log.info("exchanger chat ...");
-        log.info(message);
+        log.info(packet.getMessage());
 
         // TODO 收发消息
-        ChatMessage messageBody = ObjectMapperUtils.readValue(message, ChatMessage.class);
+        ChatMessage messageBody = ObjectMapperUtils.readValue(packet.getMessage(), ChatMessage.class);
         Assert.notNull(messageBody);
         // 1.聊天类型的消息，把聊天记录保存到数据库，同时标记消息的签收状态[未签收]
 
         // 2.给自己发送成功消息
         Channel fromChannel = SessionUtil.getChannel(messageBody.getMine().getId());
         ChatResponseMessage responseMessage = new ChatResponseMessage();
-        responseMessage.setCmd(cmd);
+        responseMessage.setCmd(packet.getCmd());
         responseMessage.setId(messageBody.getMine().getId());
         responseMessage.setUsername(messageBody.getMine().getUsername());
         responseMessage.setAvatar(messageBody.getMine().getAvatar());
@@ -66,6 +69,7 @@ public class ChatHandlerExchanger implements HandlerExchanger {
         if (null == toChannel){
             // TODO channel为null,代表用户不在线,推送消息
             log.info("用户不在线");
+            SpringContextHolder.getApplicationContext().publishEvent(new UnReadMessageEvent(packet));
         }else{
             // 给接收者发送消息
             isRead = true;

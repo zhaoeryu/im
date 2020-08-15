@@ -1,9 +1,10 @@
 package cn.wecloud.layim.netty.exchanger;
 
-import cn.wecloud.layim.layui.enums.LayimOnlineStatusEnum;
+import cn.wecloud.layim.enums.LayimOnlineStatusEnum;
 import cn.wecloud.layim.mvc.domain.entity.RelUserFriendGroup;
 import cn.wecloud.layim.mvc.service.RelUserFriendGroupService;
 import cn.wecloud.layim.netty.protocol.command.MsgCommand;
+import cn.wecloud.layim.netty.protocol.packet.WsMessageRequestPacket;
 import cn.wecloud.layim.netty.protocol.response.OnlineStatusChangeResponseMessage;
 import cn.wecloud.layim.netty.session.Session;
 import cn.wecloud.layim.netty.utils.ObjectMapperUtils;
@@ -36,13 +37,13 @@ public class ConnectHandlerExchanger implements HandlerExchanger {
     }
 
     @Override
-    public void exchange(ChannelHandlerContext ctx, String message, Byte cmd) {
+    public void exchange(ChannelHandlerContext ctx, WsMessageRequestPacket packet) {
         log.info("exchanger connect ...");
-        log.info(message);
+        log.info(packet.getMessage());
 
         // TODO 打开WS连接,保存Session
         // 当websocket 第一次open的时候，初始化channel，把用的channel和userid关联起来
-        Session session = Objects.requireNonNull(ObjectMapperUtils.readValue(message, Session.class));
+        Session session = Objects.requireNonNull(ObjectMapperUtils.readValue(packet.getMessage(), Session.class));
         SessionUtil.bindSession(ctx.channel(), session);
 
         final AtomicInteger count = new AtomicInteger(0);

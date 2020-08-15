@@ -2,6 +2,7 @@ package cn.wecloud.layim.netty.exchanger;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.wecloud.layim.netty.protocol.command.MsgCommand;
+import cn.wecloud.layim.netty.protocol.packet.WsMessageRequestPacket;
 import cn.wecloud.layim.netty.protocol.request.SignedMessage;
 import cn.wecloud.layim.netty.utils.ObjectMapperUtils;
 import io.netty.channel.ChannelHandlerContext;
@@ -27,12 +28,12 @@ public class SignedHandlerExchanger implements HandlerExchanger {
     }
 
     @Override
-    public void exchange(ChannelHandlerContext ctx, String message, Byte cmd) {
+    public void exchange(ChannelHandlerContext ctx, WsMessageRequestPacket packet) {
         log.info("exchanger signed ...");
-        log.info(message);
+        log.info(packet.getMessage());
 
         // TODO 消息签收
-        SignedMessage signedMessage = ObjectMapperUtils.readValue(message, SignedMessage.class);
+        SignedMessage signedMessage = ObjectMapperUtils.readValue(packet.getMessage(), SignedMessage.class);
         Assert.notNull(signedMessage);
 
         String[] msgIds = StringUtils.delimitedListToStringArray(signedMessage.getMsgids(), ",");

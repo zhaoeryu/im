@@ -700,6 +700,7 @@ layui.define(['layer', 'laytpl', 'upload'], function(exports){
         layimChat = null;
       }
     });
+    $('.layim-'+ data.type + data.id).find('.layim-msg-status').removeClass(SHOW);
     return index;
   };
   
@@ -740,6 +741,7 @@ layui.define(['layer', 'laytpl', 'upload'], function(exports){
       ,closeBtn: false
       ,anim: thatChat.anim || 2
       ,offset: 'b'
+      ,time: 3000
       ,move: '#layui-layim-min'
       ,resize: false
       ,area: ['182px', '50px']
@@ -1002,7 +1004,7 @@ layui.define(['layer', 'laytpl', 'upload'], function(exports){
     if(cache.base.voice){
       voice();
     }
-    
+
     if((!layimChat && data.content) || index === -1){
       if(cache.message[data.type + data.id]){
         cache.message[data.type + data.id].push(data)
@@ -1056,6 +1058,25 @@ layui.define(['layer', 'laytpl', 'upload'], function(exports){
         });
       }
       if(!data.system){
+
+        // 显示消息数量
+        var historyElem = layimMain.find('.layim-list-history');
+        var msgItem = historyElem.find('.layim-'+ data.type + data.id)
+            ,msgNums = (cache.message[data.type+data.id]||[]).length //未读消息数
+            ,showMsg = function(){
+          msgItem = historyElem.find('.layim-'+ data.type + data.id);
+          msgItem.find('p').html(data.content);
+          if(msgNums > 0){
+            msgItem.find('.layim-msg-status').html(msgNums).addClass(SHOW);
+          }
+        };
+
+        if(msgItem.length > 0){
+          showMsg();
+          historyElem.prepend(msgItem.clone());
+          msgItem.remove();
+        }
+
         if(cache.base.notice){
           notice({
             title: '来自 '+ data.username +' 的消息'
@@ -1096,7 +1117,7 @@ layui.define(['layer', 'laytpl', 'upload'], function(exports){
     
     chatListMore();
   };
-  
+
   //消息盒子的提醒
   var ANIM_MSG = 'layui-anim-loop layer-anim-05', msgbox = function(num){
     var msgboxElem = layimMain.find('.layim-tool-msgbox');

@@ -3,30 +3,23 @@ package cn.wecloud.layim.mvc.service.impl;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.study.common.base.BaseServiceImpl;
 import cn.study.common.dozer.service.IGenerator;
-import cn.study.common.utils.QueryHelpPlus;
-import cn.wecloud.layim.layui.domain.vo.LayimGroupVo;
-import cn.wecloud.layim.layui.domain.vo.LayimUserVo;
-import cn.wecloud.layim.mvc.domain.dto.UserGroupDto;
-import cn.wecloud.layim.mvc.domain.dto.UserGroupQueryCriteria;
 import cn.wecloud.layim.mvc.domain.entity.RelUserGroup;
 import cn.wecloud.layim.mvc.domain.entity.UserGroup;
 import cn.wecloud.layim.mvc.domain.entity.UserInfo;
+import cn.wecloud.layim.mvc.domain.vo.LayimGroupVo;
+import cn.wecloud.layim.mvc.domain.vo.LayimUserVo;
 import cn.wecloud.layim.mvc.mapper.UserGroupMapper;
 import cn.wecloud.layim.mvc.service.RelUserGroupService;
 import cn.wecloud.layim.mvc.service.UserGroupService;
 import cn.wecloud.layim.mvc.service.UserInfoService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.github.pagehelper.PageInfo;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -43,21 +36,6 @@ public class UserGroupServiceImpl extends BaseServiceImpl<UserGroupMapper, UserG
     private RelUserGroupService relUserGroupService;
     @Resource
     private UserInfoService userInfoService;
-
-    @Override
-    public Map<String, Object> queryAll(UserGroupQueryCriteria criteria, Pageable pageable) {
-        getPage(pageable);
-        PageInfo<UserGroup> page = new PageInfo<>(queryAll(criteria));
-        Map<String, Object> map = new LinkedHashMap<>(2);
-        map.put("content", generator.convert(page.getList(), UserGroupDto.class));
-        map.put("totalElements", page.getTotal());
-        return map;
-    }
-
-    @Override
-    public List<UserGroup> queryAll(UserGroupQueryCriteria criteria){
-        return baseMapper.selectList(QueryHelpPlus.getPredicate(UserGroup.class, criteria));
-    }
 
     @Override
     public List<LayimGroupVo> getGroupsByUserId(String userId) {

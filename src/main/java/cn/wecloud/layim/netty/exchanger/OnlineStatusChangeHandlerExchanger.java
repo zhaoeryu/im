@@ -1,9 +1,10 @@
 package cn.wecloud.layim.netty.exchanger;
 
-import cn.wecloud.layim.layui.enums.LayimOnlineStatusEnum;
+import cn.wecloud.layim.enums.LayimOnlineStatusEnum;
 import cn.wecloud.layim.mvc.domain.entity.RelUserFriendGroup;
 import cn.wecloud.layim.mvc.service.RelUserFriendGroupService;
 import cn.wecloud.layim.netty.protocol.command.MsgCommand;
+import cn.wecloud.layim.netty.protocol.packet.WsMessageRequestPacket;
 import cn.wecloud.layim.netty.protocol.request.OnlineStatusMessage;
 import cn.wecloud.layim.netty.protocol.response.OnlineStatusChangeResponseMessage;
 import cn.wecloud.layim.netty.session.Session;
@@ -36,10 +37,10 @@ public class OnlineStatusChangeHandlerExchanger implements HandlerExchanger {
     }
 
     @Override
-    public void exchange(ChannelHandlerContext ctx, String message, Byte cmd) {
+    public void exchange(ChannelHandlerContext ctx, WsMessageRequestPacket packet) {
         log.info("exchanger online status ...");
 
-        OnlineStatusMessage onlineStatusMessage = ObjectMapperUtils.readValue(message, OnlineStatusMessage.class);
+        OnlineStatusMessage onlineStatusMessage = ObjectMapperUtils.readValue(packet.getMessage(), OnlineStatusMessage.class);
         Session session = SessionUtil.getSession(ctx.channel());
         // TODO 状态切换
         final AtomicInteger count = new AtomicInteger(0);

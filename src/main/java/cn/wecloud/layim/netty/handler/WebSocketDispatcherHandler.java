@@ -1,7 +1,7 @@
 package cn.wecloud.layim.netty.handler;
 
 import cn.study.common.utils.SpringContextHolder;
-import cn.wecloud.layim.layui.enums.LayimOnlineStatusEnum;
+import cn.wecloud.layim.enums.LayimOnlineStatusEnum;
 import cn.wecloud.layim.mvc.domain.entity.RelUserFriendGroup;
 import cn.wecloud.layim.mvc.service.RelUserFriendGroupService;
 import cn.wecloud.layim.netty.dispatcher.HandlerDispatcher;

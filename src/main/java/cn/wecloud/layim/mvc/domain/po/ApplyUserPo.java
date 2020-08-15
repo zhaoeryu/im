@@ -1,4 +1,4 @@
-package cn.wecloud.layim.layui.domain.po;
+package cn.wecloud.layim.mvc.domain.po;
 
 import lombok.Data;
 
@@ -7,12 +7,16 @@ import lombok.Data;
  * @Create : zhaoey ~ 2020/06/14
  */
 @Data
-public class ApplyGroupPo {
+public class ApplyUserPo {
 
     /** 我的ID，暂时测试用 */
     private String mineId;
     /**
-     * 要添加的群ID
+     * 要添加的好友
+     */
+    private String toId;
+    /**
+     * 分组ID
      */
     private String groupId;
     /**

@@ -2,13 +2,14 @@ package cn.wecloud.layim.netty.exchanger;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
-import cn.wecloud.layim.layui.enums.LayimMessageTypeEnum;
+import cn.wecloud.layim.enums.LayimMessageTypeEnum;
 import cn.wecloud.layim.mvc.domain.entity.MessageLog;
 import cn.wecloud.layim.mvc.domain.entity.RelUserGroup;
 import cn.wecloud.layim.mvc.domain.message.TxtMessage;
 import cn.wecloud.layim.mvc.service.MessageLogService;
 import cn.wecloud.layim.mvc.service.RelUserGroupService;
 import cn.wecloud.layim.netty.protocol.command.MsgCommand;
+import cn.wecloud.layim.netty.protocol.packet.WsMessageRequestPacket;
 import cn.wecloud.layim.netty.protocol.request.ChatMessage;
 import cn.wecloud.layim.netty.protocol.response.ChatResponseMessage;
 import cn.wecloud.layim.netty.utils.ObjectMapperUtils;
@@ -16,7 +17,6 @@ import cn.wecloud.layim.netty.utils.SessionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -46,19 +46,19 @@ public class GroupMsgHandlerExchanger implements HandlerExchanger {
     }
 
     @Override
-    public void exchange(ChannelHandlerContext ctx, String message, Byte cmd) {
+    public void exchange(ChannelHandlerContext ctx, WsMessageRequestPacket packet) {
         // TODO 群消息发送
         log.info("exchanger group_msg ...");
-        log.info(message);
+        log.info(packet.getMessage());
 
-        ChatMessage messageBody = ObjectMapperUtils.readValue(message, ChatMessage.class);
+        ChatMessage messageBody = ObjectMapperUtils.readValue(packet.getMessage(), ChatMessage.class);
         Assert.notNull(messageBody);
         // 1.聊天类型的消息，把聊天记录保存到数据库，同时标记消息的签收状态[未签收]
 
         // 2.给自己发送成功消息
         Channel fromChannel = SessionUtil.getChannel(messageBody.getMine().getId());
         ChatResponseMessage responseMessage = new ChatResponseMessage();
-        responseMessage.setCmd(cmd);
+        responseMessage.setCmd(packet.getCmd());
         responseMessage.setId(messageBody.getTo().getId());
         responseMessage.setUsername(messageBody.getMine().getUsername());
         responseMessage.setAvatar(messageBody.getMine().getAvatar());
@@ -71,7 +71,7 @@ public class GroupMsgHandlerExchanger implements HandlerExchanger {
         sendMessage(fromChannel,ObjectMapperUtils.toJsonString(responseMessage));
 
         // 1.获取群组
-        ChannelGroup channelGroup = SessionUtil.getChannelGroup(messageBody.getTo().getId());
+//        ChannelGroup channelGroup = SessionUtil.getChannelGroup(messageBody.getTo().getId());
         List<RelUserGroup> groupUsers = relUserGroupService.list(new LambdaQueryWrapper<RelUserGroup>().eq(RelUserGroup::getGroupId, messageBody.getTo().getId()));
 //        // 添加伪数据--记得替换 1.聊天记录，2.群成员
 //        channelGroup = SessionUtil.initChannelGroup(messageBody.getTo().getId(),new DefaultChannelGroup(ctx.executor()));;

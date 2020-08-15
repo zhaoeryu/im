@@ -4,16 +4,11 @@ package cn.wecloud.layim.mvc.service.impl;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.study.common.base.BaseServiceImpl;
-import cn.study.common.dozer.service.IGenerator;
-import cn.study.common.utils.FileUtil;
-import cn.study.common.utils.QueryHelpPlus;
-import cn.wecloud.layim.layui.domain.vo.LayimApply;
-import cn.wecloud.layim.layui.domain.vo.LayimUserVo;
-import cn.wecloud.layim.layui.enums.LayimApplyStatusEnum;
-import cn.wecloud.layim.layui.enums.LayimApplyTypeEnum;
-import cn.wecloud.layim.layui.model.LayuiResult;
-import cn.wecloud.layim.mvc.domain.dto.ApplyAuditDto;
-import cn.wecloud.layim.mvc.domain.dto.ApplyAuditQueryCriteria;
+import cn.wecloud.layim.mvc.domain.vo.LayimApply;
+import cn.wecloud.layim.mvc.domain.vo.LayimUserVo;
+import cn.wecloud.layim.enums.LayimApplyStatusEnum;
+import cn.wecloud.layim.enums.LayimApplyTypeEnum;
+import cn.wecloud.layim.model.LayuiResult;
 import cn.wecloud.layim.mvc.domain.entity.ApplyAudit;
 import cn.wecloud.layim.mvc.domain.entity.UserGroup;
 import cn.wecloud.layim.mvc.domain.entity.UserInfo;
@@ -33,8 +28,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,8 +39,6 @@ import java.util.stream.Collectors;
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true, rollbackFor = Exception.class)
 public class ApplyAuditServiceImpl extends BaseServiceImpl<ApplyAuditMapper, ApplyAudit> implements ApplyAuditService {
 
-    @Resource
-    private IGenerator generator;
     @Resource
     private UserInfoService userInfoService;
     @Resource
@@ -198,36 +189,5 @@ public class ApplyAuditServiceImpl extends BaseServiceImpl<ApplyAuditMapper, App
         }
 
         return message;
-    }
-
-    @Override
-    public Map<String, Object> queryAll(ApplyAuditQueryCriteria criteria, Pageable pageable) {
-        getPage(pageable);
-        PageInfo<ApplyAudit> page = new PageInfo<>(queryAll(criteria));
-        Map<String, Object> map = new LinkedHashMap<>(2);
-        map.put("content", generator.convert(page.getList(), ApplyAuditDto.class));
-        map.put("totalElements", page.getTotal());
-        return map;
-    }
-
-    @Override
-    public List<ApplyAudit> queryAll(ApplyAuditQueryCriteria criteria){
-        return baseMapper.selectList(QueryHelpPlus.getPredicate(ApplyAudit.class, criteria));
-    }
-
-    @Override
-    public void download(List<ApplyAuditDto> all, HttpServletResponse response) throws IOException {
-        List<Map<String, Object>> list = new ArrayList<>();
-        for (ApplyAuditDto applyaudit : all) {
-            Map<String,Object> map = new LinkedHashMap<>();
-            map.put("申请类型：friend:添加好友申请，group:添加群申请", applyaudit.getType());
-            map.put("申请者ID", applyaudit.getApplyUserId());
-            map.put("审核者ID", applyaudit.getAuditUserId());
-            map.put("申请类型为friend，则值为分组ID；申请类型为group，则值为群ID", applyaudit.getGroupId());
-            map.put("申请备注", applyaudit.getRemark());
-            map.put("申请时间", applyaudit.getCreateTime());
-            list.add(map);
-        }
-        FileUtil.downloadExcel(list, response);
     }
 }

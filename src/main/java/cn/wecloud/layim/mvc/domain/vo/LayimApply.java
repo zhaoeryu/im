@@ -1,4 +1,4 @@
-package cn.wecloud.layim.layui.domain.vo;
+package cn.wecloud.layim.mvc.domain.vo;
 
 import cn.wecloud.layim.mvc.domain.entity.UserGroup;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package cn.wecloud.layim.layui.model;
+package cn.wecloud.layim.model;
 
 import cn.study.common.exception.ErrorCode;
 import com.fasterxml.jackson.annotation.JsonIgnore;

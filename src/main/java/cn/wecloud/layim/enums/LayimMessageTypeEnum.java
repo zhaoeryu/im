@@ -1,4 +1,4 @@
-package cn.wecloud.layim.layui.enums;
+package cn.wecloud.layim.enums;
 
 /**
  * @Desc : 消息类型

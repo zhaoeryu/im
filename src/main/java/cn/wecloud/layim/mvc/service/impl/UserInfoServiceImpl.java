@@ -2,17 +2,12 @@ package cn.wecloud.layim.mvc.service.impl;
 
 
 import cn.study.common.base.BaseServiceImpl;
-import cn.study.common.dozer.service.IGenerator;
 import cn.study.common.utils.FileUtil;
-import cn.study.common.utils.QueryHelpPlus;
 import cn.wecloud.layim.mvc.domain.dto.UserInfoDto;
-import cn.wecloud.layim.mvc.domain.dto.UserInfoQueryCriteria;
 import cn.wecloud.layim.mvc.domain.entity.UserInfo;
 import cn.wecloud.layim.mvc.mapper.UserInfoMapper;
 import cn.wecloud.layim.mvc.service.UserInfoService;
-import com.github.pagehelper.PageInfo;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,23 +27,6 @@ import java.util.Map;
 @AllArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true, rollbackFor = Exception.class)
 public class UserInfoServiceImpl extends BaseServiceImpl<UserInfoMapper, UserInfo> implements UserInfoService {
-
-    private final IGenerator generator;
-
-    @Override
-    public Map<String, Object> queryAll(UserInfoQueryCriteria criteria, Pageable pageable) {
-        getPage(pageable);
-        PageInfo<UserInfo> page = new PageInfo<>(queryAll(criteria));
-        Map<String, Object> map = new LinkedHashMap<>(2);
-        map.put("content", generator.convert(page.getList(), UserInfoDto.class));
-        map.put("totalElements", page.getTotal());
-        return map;
-    }
-
-    @Override
-    public List<UserInfo> queryAll(UserInfoQueryCriteria criteria){
-        return baseMapper.selectList(QueryHelpPlus.getPredicate(UserInfo.class, criteria));
-    }
 
     @Override
     public void download(List<UserInfoDto> all, HttpServletResponse response) throws IOException {
