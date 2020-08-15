@@ -18,6 +18,7 @@
     - 断线重连
     - 服务端空闲检测
     - 客户端心跳检测
+    - 在线状态实时更新
 
 - 在线演示(PC)： http://kefu.zhaoey.club
 - 在线演示(移动端)：http://kefu.zhaoey.club/mobile
