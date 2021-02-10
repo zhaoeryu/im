@@ -4,9 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>cn.wecloud</groupId>
+    <groupId>cn.study</groupId>
     <artifactId>im</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>im-starter</module>
+        <module>im-server</module>
+        <module>im-common</module>
+    </modules>
 
     <properties>
         <java.version>1.8</java.version>
@@ -42,12 +48,8 @@
         <oshi.version>3.9.1</oshi.version>
 
         <!-- 自定义版本 -->
+        <study-starter.version>1.0-SNAPSHOT</study-starter.version>
         <study-common.version>1.0-SNAPSHOT</study-common.version>
-        <study-common-starter.version>1.0-SNAPSHOT</study-common-starter.version>
-        <study-code-generator.version>1.0-SNAPSHOT</study-code-generator.version>
-        <study-quartz.version>1.0-SNAPSHOT</study-quartz.version>
-        <study-message.version>1.0-SNAPSHOT</study-message.version>
-        <study-logger.version>1.0-SNAPSHOT</study-logger.version>
     </properties>
 
     <dependencyManagement>
@@ -59,61 +61,22 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
             <dependency>
                 <groupId>cn.study</groupId>
-                <artifactId>common-starter</artifactId>
-                <version>${study-common-starter.version}</version>
+                <artifactId>im-starter</artifactId>
+                <version>${study-starter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.study</groupId>
+                <artifactId>im-common</artifactId>
+                <version>${study-common.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
 
-
-    <dependencies>
-        <!-- 启动器 -->
-        <dependency>
-            <groupId>cn.study</groupId>
-            <artifactId>common-starter</artifactId>
-        </dependency>
-
-        <!-- Netty -->
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>${netty.version}</version>
-        </dependency>
-
-        <!-- thymeleaf -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge.nekohtml</groupId>
-            <artifactId>nekohtml</artifactId>
-            <version>1.9.18</version>
-        </dependency>
-
-    </dependencies>
-
     <build>
         <finalName>${artifactId}</finalName>
         <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot.version}</version>
-                <configuration>
-                    <executable>true</executable>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
