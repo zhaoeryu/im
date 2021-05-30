@@ -9,7 +9,8 @@ import lombok.Data;
 @Data
 public class AuditPo {
 
-    private Integer id;
+    private String id;
     private Integer status;
+    private String groupId;
 
 }

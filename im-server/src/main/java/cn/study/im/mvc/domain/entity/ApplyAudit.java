@@ -17,8 +17,8 @@ import java.util.Date;
 @TableName("apply_audit")
 public class ApplyAudit implements Serializable {
 
-    @TableId(type = IdType.AUTO)
-    private Integer id;
+    @TableId(type = IdType.ID_WORKER_STR)
+    private String id;
 
 
     /** 申请类型：friend:添加好友申请，group:添加群申请 */

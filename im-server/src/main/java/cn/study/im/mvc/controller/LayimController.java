@@ -5,12 +5,13 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.study.common.dozer.service.IGenerator;
+import cn.study.common.utils.SpringContextHolder;
 import cn.study.im.constants.BaseConstants;
 import cn.study.im.enums.LayimApplyStatusEnum;
 import cn.study.im.enums.LayimApplyTypeEnum;
 import cn.study.im.enums.LayimMessageTypeEnum;
-import cn.study.im.enums.LayimOnlineStatusEnum;
 import cn.study.im.model.LayuiResult;
+import cn.study.im.mvc.domain.dto.MsgBoxUser;
 import cn.study.im.mvc.domain.entity.*;
 import cn.study.im.mvc.domain.message.TxtMessage;
 import cn.study.im.mvc.domain.po.ApplyGroupPo;
@@ -21,6 +22,7 @@ import cn.study.im.mvc.domain.vo.LayimGroupVo;
 import cn.study.im.mvc.domain.vo.LayimUserGroupVo;
 import cn.study.im.mvc.domain.vo.LayimUserVo;
 import cn.study.im.mvc.service.*;
+import cn.study.im.netty.event.MsgBoxEvent;
 import cn.study.im.netty.utils.ObjectMapperUtils;
 import cn.study.im.security.LayimUser;
 import cn.study.im.security.SecurityHelper;
@@ -185,6 +187,7 @@ public class LayimController {
         List<ApplyAudit> applyAudits = applyAuditService.list(new LambdaQueryWrapper<ApplyAudit>()
                 .eq(ApplyAudit::getApplyUserId, po.getMineId())
                 .eq(ApplyAudit::getAuditUserId, po.getToId())
+                .eq(ApplyAudit::getStatus, LayimApplyStatusEnum.APPLY)
         );
         if (CollectionUtil.isNotEmpty(applyAudits)) {
             return LayuiResult.failed().msg("已经发送过验证了，请等待对方同意");
@@ -200,6 +203,8 @@ public class LayimController {
         applyAudit.setStatus(LayimApplyStatusEnum.APPLY.getValue());
         applyAuditService.save(applyAudit);
 
+        // 给审核人发送通知
+        SpringContextHolder.getApplicationContext().publishEvent(new MsgBoxEvent(new MsgBoxUser(po.getToId())));
         return LayuiResult.ok();
     }
 
@@ -226,6 +231,7 @@ public class LayimController {
         List<ApplyAudit> applyAudits = applyAuditService.list(new LambdaQueryWrapper<ApplyAudit>()
                 .eq(ApplyAudit::getApplyUserId, po.getMineId())
                 .eq(ApplyAudit::getAuditUserId, userGroup.getUserId())
+                .eq(ApplyAudit::getStatus, LayimApplyStatusEnum.APPLY)
         );
         if (CollectionUtil.isNotEmpty(applyAudits)) {
             return LayuiResult.failed().msg("已经发送过验证了，请等待对方同意");
@@ -240,6 +246,9 @@ public class LayimController {
         applyAudit.setRemark(po.getRemark());
         applyAudit.setStatus(LayimApplyStatusEnum.APPLY.getValue());
         applyAuditService.save(applyAudit);
+
+        // 给审核人发送通知
+        SpringContextHolder.getApplicationContext().publishEvent(new MsgBoxEvent(new MsgBoxUser(userGroup.getUserId())));
         return LayuiResult.ok();
     }
 
@@ -247,39 +256,7 @@ public class LayimController {
     public LayuiResult auditUser(
             @RequestBody AuditPo po
     ) {
-        ApplyAudit apply = applyAuditService.getById(po.getId());
-        Assert.notNull(apply);
-
-        // 审核请求
-        LambdaUpdateWrapper<ApplyAudit> updateWrapper = new LambdaUpdateWrapper<>();
-        updateWrapper.eq(ApplyAudit::getId, po.getId());
-        updateWrapper.set(ApplyAudit::getStatus, po.getStatus());
-        applyAuditService.update(updateWrapper);
-
-        // 同意请求
-        if (LayimApplyStatusEnum.AGREE.getValue() == po.getStatus()) {
-            if (LayimApplyTypeEnum.FRIEND.getValue().equals(apply.getType())) {
-                // 添加好友关系
-                // 双向添加
-                RelUserFriendGroup friendGroup = new RelUserFriendGroup();
-                friendGroup.setGroupId(BaseConstants.DEFAULT_FRIEND_GROUP_ID);
-                friendGroup.setUserId(apply.getAuditUserId());
-                friendGroup.setFriendId(apply.getApplyUserId());
-                relUserFriendGroupService.save(friendGroup);
-
-                friendGroup = new RelUserFriendGroup();
-                friendGroup.setGroupId(apply.getGroupId());
-                friendGroup.setUserId(apply.getApplyUserId());
-                friendGroup.setFriendId(apply.getAuditUserId());
-                relUserFriendGroupService.save(friendGroup);
-            } else if (LayimApplyTypeEnum.GROUP.getValue().equals(apply.getType())) {
-                // 进群
-                RelUserGroup relUserGroup = new RelUserGroup();
-                relUserGroup.setGroupId(apply.getGroupId());
-                relUserGroup.setUserId(apply.getApplyUserId());
-                relUserGroupService.save(relUserGroup);
-            }
-        }
+        applyAuditService.apply(po);
         return LayuiResult.ok();
     }
 
@@ -301,14 +278,7 @@ public class LayimController {
             @RequestBody UserInfo userInfo
     ) {
         Assert.notBlank(userInfo.getUsername());
-        List<UserInfo> list = userInfoService.list(new LambdaQueryWrapper<UserInfo>().eq(UserInfo::getUsername, userInfo.getUsername()));
-        if (CollectionUtil.isNotEmpty(list)) {
-            return LayuiResult.failed().msg("该用户名已被使用");
-        }
-        userInfo.setStatus(LayimOnlineStatusEnum.ONLINE.getStatus());
-        userInfo.setSign(BaseConstants.DEFAULT_SIGN);
-        userInfo.setAvatar(BaseConstants.DEFAULT_AVATAR);
-        userInfoService.save(userInfo);
+        userInfoService.register(userInfo);
         return LayuiResult.ok();
     }
 
@@ -320,9 +290,9 @@ public class LayimController {
     public LayuiResult unreadmsg(){
         String userId = SecurityHelper.getUserId();
 
-        long unreadCount = applyAuditService.list(new LambdaQueryWrapper<ApplyAudit>()
+        long unreadCount = applyAuditService.count(new LambdaQueryWrapper<ApplyAudit>()
                 .in(ApplyAudit::getAuditUserId, userId)
-                .eq(ApplyAudit::getStatus, LayimApplyStatusEnum.APPLY.getValue())).stream().count();
+                .eq(ApplyAudit::getStatus, LayimApplyStatusEnum.APPLY.getValue()));
 
         return LayuiResult.ok().data(unreadCount);
     }

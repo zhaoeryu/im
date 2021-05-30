@@ -11,6 +11,8 @@ import java.io.Serializable;
 @Data
 public class RelUserFriendGroupDto implements Serializable {
 
+    private String id;
+
     /** 群ID */
     private String groupId;
 

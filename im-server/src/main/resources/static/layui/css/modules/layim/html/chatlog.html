@@ -60,7 +60,7 @@
         var lis = [];
 
         console.log(page);
-        instance({
+        request({
           method: 'get',
           url: '/layim/chatlog' + param + '&page='+page
         }).then(res => {
@@ -84,7 +84,7 @@
     });
 
     // 分页=============
-    // instance({
+    // request({
     //   method: 'get',
     //   url: '/layim/chatlog' + param
     // }).then(res => {
@@ -107,7 +107,7 @@
     // })
 
     // function bindingMessage(page) {
-    //   instance({
+    //   request({
     //     method: 'get',
     //     url: '/layim/chatlog' + param + '&page='+page
     //   }).then(res => {

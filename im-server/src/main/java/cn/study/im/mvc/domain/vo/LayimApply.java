@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Data
 public class LayimApply implements Serializable {
 
-    private Integer id;
+    private String id;
     private String content;
     private String uid;
     // 对方ID

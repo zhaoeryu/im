@@ -147,7 +147,7 @@
       var loadIndex = layer.load(1, {
         shade: [0.1,'#fff'] //0.1透明度的白色背景
       });
-      instance({
+      request({
         method: 'get',
         url: '/layim/search/user?keyword=' + keyword
       }).then(res => {
@@ -172,7 +172,7 @@
       var loadIndex = layer.load(1, {
         shade: [0.1,'#fff'] //0.1透明度的白色背景
       });
-      instance({
+      request({
         method: 'get',
         url: '/layim/search/group?keyword=' + keyword
       }).then(res => {
@@ -209,7 +209,7 @@
           var loadIndex = layer.load(1, {
             shade: [0.1,'#fff'] //0.1透明度的白色背景
           });
-          instance({
+          request({
             method: 'post',
             url: '/layim/apply/user',
             data: {
@@ -252,7 +252,7 @@
           var loadIndex = layer.load(1, {
             shade: [0.1,'#fff'] //0.1透明度的白色背景
           });
-          instance({
+          request({
             method: 'post',
             url: '/layim/apply/group',
             data: {

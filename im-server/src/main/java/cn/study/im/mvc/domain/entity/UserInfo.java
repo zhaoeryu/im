@@ -9,6 +9,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
 * @Desc :
@@ -38,7 +39,8 @@ public class UserInfo implements Serializable {
     /** 用户头像 */
     private String avatar;
 
-
+    private Date createTime;
+    private Date updateTime;
     public void copy(UserInfo source){
         BeanUtil.copyProperties(source,this, CopyOptions.create().setIgnoreNullValue(true));
     }

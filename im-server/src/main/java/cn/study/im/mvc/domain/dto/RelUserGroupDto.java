@@ -12,6 +12,7 @@ import java.util.Date;
 @Data
 public class RelUserGroupDto implements Serializable {
 
+    private String id;
     /** 群ID */
     private String groupId;
 

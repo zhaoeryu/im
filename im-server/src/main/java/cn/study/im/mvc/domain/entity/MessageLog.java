@@ -48,6 +48,9 @@ public class MessageLog implements Serializable {
 
     private Boolean readFlag;
 
+    private Date createTime;
+    private Date updateTime;
+
     public void copy(MessageLog source){
         BeanUtil.copyProperties(source,this, CopyOptions.create().setIgnoreNullValue(true));
     }

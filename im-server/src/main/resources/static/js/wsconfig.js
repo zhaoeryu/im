@@ -8,6 +8,7 @@ var MSG_CMD = {
     KEEPALIVE: 4,// 客户端保持心跳
     GROUP_MSG: 5, // 群消息
     ONLINE_STATUS: 6, // 在线状态
+    MSG_BOX: 7, // 消息盒子的消息数量
 }
 
 /**
@@ -79,7 +80,7 @@ WS.sendMessage = function(cmd,message){
 }
 
 /**
- * 每20秒进行心跳检查
+ * 每30秒进行心跳检查
  */
 WS.keepAlive = function (mine) {
     setInterval(() => {

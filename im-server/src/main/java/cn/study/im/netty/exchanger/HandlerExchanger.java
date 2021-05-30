@@ -1,6 +1,8 @@
 package cn.study.im.netty.exchanger;
 
+import cn.hutool.core.lang.Assert;
 import cn.study.im.netty.protocol.packet.WsMessageRequestPacket;
+import cn.study.im.netty.utils.ObjectMapperUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -17,5 +19,16 @@ public interface HandlerExchanger {
 
     default void sendMessage(Channel channel, String message){
         channel.writeAndFlush(new TextWebSocketFrame(message).retain());
+    }
+
+    default <T> T readValue(WsMessageRequestPacket packet,Class<T> clazz, boolean checkNull){
+        T t = ObjectMapperUtils.readValue(packet.getMessage(), clazz);
+        if (checkNull) {
+            Assert.notNull(t);
+        }
+        return t;
+    }
+    default <T> T readValue(WsMessageRequestPacket packet,Class<T> clazz){
+        return readValue(packet, clazz, true);
     }
 }

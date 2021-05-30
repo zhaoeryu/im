@@ -9,4 +9,6 @@ import cn.study.im.mvc.domain.entity.UserInfo;
 */
 public interface UserInfoService extends IBaseService<UserInfo>{
 
+    void register(UserInfo userInfo);
+
 }

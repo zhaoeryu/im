@@ -80,7 +80,7 @@
 
         //监听在线状态的切换事件
         layim.on('online', function (data) {
-            instance({
+            request({
                 method: 'put',
                 url: '/layim/user',
                 data: {
@@ -99,7 +99,7 @@
 
         //监听签名修改
         layim.on('sign', function (value) {
-            instance({
+            request({
                 method: 'put',
                 url: '/layim/user',
                 data: {
@@ -136,11 +136,6 @@
             WS.wscall.onmessage = function (event) {
                 console.log('onmessage...');
                 var resp = JSON.parse(event.data)
-                // console.log(resp);
-                // case 1: 用户消息
-
-                // case 2: 系统消息
-
                 switch (resp.cmd){
                     case MSG_CMD.CHAT:
                     case MSG_CMD.GROUP_MSG:
@@ -150,6 +145,9 @@
                         break;
                     case MSG_CMD.ONLINE_STATUS:
                         layim.setFriendStatus(resp.friendId, resp.onlineStatus);
+                        break;
+                    case MSG_CMD.MSG_BOX:
+                        layim.msgbox(resp.unreadCount);
                         break;
                 }
             }
@@ -188,7 +186,7 @@
             WS.keepAlive(mine)
 
             // 获取系统消息
-            instance({
+            request({
                 method: 'get',
                 url: '/layim/unreadmsg'
             }).then(res => {

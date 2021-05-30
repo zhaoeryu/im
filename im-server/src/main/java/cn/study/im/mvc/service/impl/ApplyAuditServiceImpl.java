@@ -2,20 +2,21 @@ package cn.study.im.mvc.service.impl;
 
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
 import cn.study.common.base.BaseServiceImpl;
+import cn.study.common.utils.SpringContextHolder;
 import cn.study.im.enums.LayimApplyStatusEnum;
 import cn.study.im.enums.LayimApplyTypeEnum;
 import cn.study.im.model.LayuiResult;
-import cn.study.im.mvc.domain.entity.ApplyAudit;
-import cn.study.im.mvc.domain.entity.UserGroup;
-import cn.study.im.mvc.domain.entity.UserInfo;
+import cn.study.im.mvc.domain.dto.MsgBoxUser;
+import cn.study.im.mvc.domain.entity.*;
+import cn.study.im.mvc.domain.po.AuditPo;
 import cn.study.im.mvc.domain.vo.LayimApply;
 import cn.study.im.mvc.domain.vo.LayimUserVo;
 import cn.study.im.mvc.mapper.ApplyAuditMapper;
-import cn.study.im.mvc.service.ApplyAuditService;
-import cn.study.im.mvc.service.UserGroupService;
-import cn.study.im.mvc.service.UserInfoService;
+import cn.study.im.mvc.service.*;
+import cn.study.im.netty.event.MsgBoxEvent;
 import cn.study.im.security.SecurityHelper;
 import cn.study.im.util.TimeAgoUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -43,6 +44,12 @@ public class ApplyAuditServiceImpl extends BaseServiceImpl<ApplyAuditMapper, App
     private UserInfoService userInfoService;
     @Resource
     private UserGroupService userGroupService;
+    @Resource
+    private RelUserFriendGroupService relUserFriendGroupService;
+    @Resource
+    private RelUserGroupService relUserGroupService;
+    @Resource
+    private UserFriendGroupService userFriendGroupService;
 
     @Override
     public LayuiResult getMsgList(Pageable pageable) {
@@ -107,7 +114,7 @@ public class ApplyAuditServiceImpl extends BaseServiceImpl<ApplyAuditMapper, App
                 }).collect(Collectors.toList());
 
         // 标记消息已读
-        List<Integer> unReadIds = list.stream()
+        List<String> unReadIds = list.stream()
                 // 审核者读消息 改
                 .filter(item -> userId.equals(item.getAuditUserId()))
                 // 未读消息 改
@@ -121,6 +128,47 @@ public class ApplyAuditServiceImpl extends BaseServiceImpl<ApplyAuditMapper, App
 
         PageInfo<ApplyAudit> pageInfo = new PageInfo<>(list);
         return LayuiResult.ok().data(collect).pages(pageInfo.getPages());
+    }
+
+    @Override
+    public void apply(AuditPo po) {
+        ApplyAudit apply = getById(po.getId());
+        Assert.notNull(apply);
+
+        // 审核请求
+        LambdaUpdateWrapper<ApplyAudit> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(ApplyAudit::getId, po.getId());
+        updateWrapper.set(ApplyAudit::getStatus, po.getStatus());
+        update(updateWrapper);
+
+        // 同意请求
+        if (LayimApplyStatusEnum.AGREE.getValue() == po.getStatus()) {
+            if (LayimApplyTypeEnum.FRIEND.getValue().equals(apply.getType())) {
+                // 添加好友关系
+
+                // 双向添加
+                RelUserFriendGroup friendGroup = new RelUserFriendGroup();
+                // 查找审核者的分组id
+                friendGroup.setGroupId(po.getGroupId());
+                friendGroup.setUserId(apply.getAuditUserId());
+                friendGroup.setFriendId(apply.getApplyUserId());
+                relUserFriendGroupService.save(friendGroup);
+
+                friendGroup = new RelUserFriendGroup();
+                friendGroup.setGroupId(apply.getGroupId());
+                friendGroup.setUserId(apply.getApplyUserId());
+                friendGroup.setFriendId(apply.getAuditUserId());
+                relUserFriendGroupService.save(friendGroup);
+            } else if (LayimApplyTypeEnum.GROUP.getValue().equals(apply.getType())) {
+                // 进群
+                RelUserGroup relUserGroup = new RelUserGroup();
+                relUserGroup.setGroupId(apply.getGroupId());
+                relUserGroup.setUserId(apply.getApplyUserId());
+                relUserGroupService.save(relUserGroup);
+            }
+        }
+        // 通知给请求人
+        SpringContextHolder.getApplicationContext().publishEvent(new MsgBoxEvent(new MsgBoxUser(apply.getApplyUserId())));
     }
 
     private String parseContent(ApplyAudit item,Map<String,UserInfo> userMap,Map<String,UserGroup> groupMap){

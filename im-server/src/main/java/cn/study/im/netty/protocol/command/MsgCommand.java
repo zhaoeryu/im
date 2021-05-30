@@ -17,6 +17,8 @@ public enum MsgCommand {
     ,GROUP_MSG((byte)5)
     /** 在线状态 */
     ,ONLINE_STATUS((byte)6)
+    /** 消息盒子 */
+    ,MSG_BOX((byte) 7)
     ;
 
     private final byte cmd;

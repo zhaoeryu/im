@@ -9,6 +9,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
 * @Desc :
@@ -18,7 +19,7 @@ import java.io.Serializable;
 @TableName("user_group")
 public class UserGroup implements Serializable {
 
-    @TableId(type = IdType.ID_WORKER)
+    @TableId(type = IdType.ID_WORKER_STR)
     private String id;
 
 
@@ -37,7 +38,8 @@ public class UserGroup implements Serializable {
     @NotBlank
     private String userId;
 
-
+    private Date createTime;
+    private Date updateTime;
     public void copy(UserGroup source){
         BeanUtil.copyProperties(source,this, CopyOptions.create().setIgnoreNullValue(true));
     }

@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 public class ApplyAuditDto implements Serializable {
 
-    private Integer id;
+    private String id;
 
     /** 申请类型：friend:添加好友申请，group:添加群申请 */
     private String type;

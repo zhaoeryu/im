@@ -1,9 +1,9 @@
-const instance = axios.create({
+const request = axios.create({
     baseURL: 'http://'+window.location.host+'/',
     timeout: 7000
 });
 // 添加请求拦截器
-instance.interceptors.request.use(function (config) {
+request.interceptors.request.use(function (config) {
     // 在发送请求之前做些什么
     return config;
 }, function (error) {
@@ -12,7 +12,7 @@ instance.interceptors.request.use(function (config) {
 });
 
 // 添加响应拦截器
-instance.interceptors.response.use(function (response) {
+request.interceptors.response.use(function (response) {
     // 对响应数据做点什么
     const res = response.data
     if (response.status < 200 || response.status > 300 || (!!res.code && res.code !== 0 && res.code !== 1000)) {

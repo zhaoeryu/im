@@ -20,4 +20,5 @@ public class LayimUserGroupVo implements Serializable {
     private Integer online;
     /** 分组成员 */
     private List<LayimUserVo> list;
+
 }

@@ -82,7 +82,7 @@
 
       //实际部署时，请将下述 getmsg.json 改为你的接口地址
 
-      instance({
+      request({
         method: 'get',
         url: '/layim/audit/list?page=' + page || 1
       }).then(res => {
@@ -136,13 +136,13 @@
             ,avatar: user.avatar
             ,group: parent.layui.layim.cache().friend //获取好友分组数据
             ,submit: function(group, index){
-
-              instance({
+                  request({
                 method: 'post',
                 url: '/layim/audit/apply',
                 data: {
                   id: id,
-                  status: 1
+                  status: 1,
+                  groupId: group
                 }
               }).then(res => {
                 if (res.code != 0){
@@ -171,7 +171,7 @@
             ,id: from_group //群组id
             ,submit: function(group, index){
 
-              instance({
+              request({
                 method: 'post',
                 url: '/layim/audit/apply',
                 data: {
@@ -197,7 +197,7 @@
                 ,uid = li.data('uid');
 
         layer.confirm('确定拒绝吗？', function(index){
-          instance({
+          request({
             method: 'post',
             url: '/layim/audit/apply',
             data: {
