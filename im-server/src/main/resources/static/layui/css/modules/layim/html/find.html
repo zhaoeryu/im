@@ -49,6 +49,7 @@
               <input type="text" name="name" maxlength="27" placeholder="请输入群名" autocomplete="off" class="layui-input">
             </div>
             <button class="layui-btn" lay-submit="" lay-filter="search2">搜索</button>
+            <button type="button" class="layui-btn layui-btn-normal" id="btn-create-group">创建群</button>
           </div>
         </form>
         <hr>
@@ -113,6 +114,22 @@
 </textarea>
 
 
+<div id="add-main" style="display: none;margin-top: 40px;">
+  <form class="layui-form" id="add-form"  action="">
+    <div class="layui-form-item center" >
+      <label class="layui-form-label" style="width: 100px" >群名称</label>
+      <div class="layui-input-block">
+        <input type="text" name="groupname" required value="" style="width: 240px"  lay-verify="required" placeholder="请输入群名称" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <button class="layui-btn" lay-submit lay-filter="createGroup" >立即提交</button>
+        <button type="reset" class="layui-btn layui-btn-primary" id="closeBtn" >重置</button>
+      </div>
+    </div>
+  </form>
+</div>
 
 
 <script src="../../../../layui.js"></script>
@@ -275,6 +292,44 @@
         }
       });
     });
+
+    // 创建群
+    var createGroupIndex;
+    $("#btn-create-group").click(function (e) {
+      //页面层-自定义
+      createGroupIndex = layer.open({
+        type: 1,
+        title:"创建群",
+        area: ['400px', '300px'],
+        content: $("#add-main")
+      });
+    })
+
+    // 创建群
+    form.on('submit(createGroup)', function (data) {
+      var params = data.field;
+      //loading层
+      var loadIndex = layer.load(1, {
+        shade: [0.1,'#fff'] //0.1透明度的白色背景
+      });
+      request({
+        method: 'post',
+        url: '/layim/group/add',
+        data: params
+      }).then(res => {
+        if (res.code == 0) {
+          layer.close(createGroupIndex)
+          layer.msg("创建成功")
+        }else {
+          layer.msg(res.msg)
+        }
+      }).catch(e => {
+        layer.msg("请求失败")
+      }).finally(() => {
+        layer.close(loadIndex);
+      })
+      return false;
+    })
 
   });
 </script>

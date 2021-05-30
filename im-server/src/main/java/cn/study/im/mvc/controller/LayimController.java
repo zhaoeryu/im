@@ -32,6 +32,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
@@ -237,6 +238,10 @@ public class LayimController {
             return LayuiResult.failed().msg("已经发送过验证了，请等待对方同意");
         }
 
+        if (StrUtil.equals(SecurityHelper.getUserId(), userGroup.getUserId())) {
+            return LayuiResult.failed().msg("您是该群的群主，不要重复添加哦！");
+        }
+
         // 添加申请
         ApplyAudit applyAudit = new ApplyAudit();
         applyAudit.setType(LayimApplyTypeEnum.GROUP.getValue());
@@ -364,4 +369,20 @@ public class LayimController {
         PageInfo<MessageLog> pageInfo = new PageInfo<>(list);
         return LayuiResult.ok().data(logs).pages(pageInfo.getPages()).total(pageInfo.getTotal());
     }
+
+    /**
+     * 创建群
+     */
+    @PostMapping("/group/add")
+    public LayuiResult groupCreate(@RequestBody UserGroup userGroup) {
+        try {
+            userGroup.setAvatar(BaseConstants.DEFAULT_AVATAR);
+            userGroup.setUserId(SecurityHelper.getUserId());
+            userGroupService.save(userGroup);
+        }catch (DuplicateKeyException e) {
+            return LayuiResult.failed().msg("["+userGroup.getGroupname()+"]已存在，请更换名称");
+        }
+        return LayuiResult.ok();
+    }
+
 }
